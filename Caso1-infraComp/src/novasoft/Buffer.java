@@ -2,20 +2,26 @@ package novasoft;
 
 import java.util.ArrayList;
 
+
 public class Buffer {
 
-	public final static int max = 10;
+	private int max;
 	private ArrayList<Mensaje> mensajes = new ArrayList<Mensaje>();
 	private ArrayList<Cliente> clientesA = new ArrayList<Cliente>();
 	private int nMensajes;
 
 	private static Buffer buffer;
 
-	private Buffer() {
+	public Buffer() {
 		mensajes = new ArrayList<Mensaje>();
 		clientesA = new ArrayList<Cliente>();
 		nMensajes = 0;
 	}	
+	
+	public void setBuffSize(int s)
+	{
+		max=s;
+	}
 
 	public static Buffer getBuffer() {
 		if(buffer == null) {
@@ -23,7 +29,7 @@ public class Buffer {
 		}
 		return buffer;
 	}
-	public synchronized boolean meter(Mensaje m, Cliente cli) throws InterruptedException {
+	public synchronized boolean meter(Mensaje m, Cliente cli)  {
 		boolean adentro = false;
 		if(nMensajes>max)
 			adentro=false;
@@ -44,18 +50,22 @@ public class Buffer {
 
 
 
-
-	public synchronized Mensaje retirar(Servidor ser)
+	public synchronized Mensaje retirar()
 	{
-		Mensaje mens=null;
-		if(mensajes.size() > 0)
+		Mensaje retirar=null;
 		{
-			 mens=mensajes.get(mensajes.size()-1);
-			mensajes.remove(mensajes.size()-1);
-			nMensajes--;
-			this.notifyAll();
+			if(nMensajes>0)
+			{
+				retirar=mensajes.get(mensajes.size()-1);
+				mensajes.remove(mensajes.size()-1);
+				nMensajes--;
+			}
+			return retirar;
 		}
-	return mens;
 	}
+	public synchronized boolean chapCliente(Cliente clienteR) {
+		return clientesA.remove(clienteR);
+	}
+
 
 }
