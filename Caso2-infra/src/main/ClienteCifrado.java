@@ -30,13 +30,13 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
-public class Cliente {
+public class ClienteCifrado {
 	
 	private static Socket s;
 	private static BufferedReader bReader;
 	private static PrintWriter pWriter;
 	private static final char[] hexArray = "0123456789ABCDEF".toCharArray();
-	private static final String[] ALGORITMOS = {"AES","Blowfish","RSA","HMACMD5","HMACSHA1","HMACSHA256"};
+	private static final String[] ALGORITMOS = {"DES","AES","Blowfish","RC4","RSA","HMACMD5","HMACSHA1","HMACSHA256"};
 	private static KeyPair keypair;
 	private static X509Certificate serverCert;
 	private static SecretKey serverPublicKey;
@@ -191,33 +191,34 @@ public class Cliente {
 			conectarseS(pu);
 			init();
 			LinkedList<Integer> algor = new LinkedList<Integer>();
-			boolean ya = false;
-			while(!ya) {
-				System.out.println("1)AES 2)Blowfish 3)RSA 4)HMACMD5 5)HMACSHA1 6)HMACSHA256");
-				System.out.println("Escriba el numero del algoritmo deseado o 'ya' para continuar");
-				System.out.println("Algoritmos inscritos: " + algor.size());
-				String al = reader.nextLine();
-				if(al.equals("ya")) {
-					ya = true;
-				}
-				else if(al.equals("1")) {
-					algor.add(1);
-				}
-				else if(al.equals("2")) {
-					algor.add(2);
-				}
-				else if(al.equals("3")) {
-					algor.add(3);
-				}
-				else if(al.equals("4")) {
-					algor.add(4);
-				}
-				else if(al.equals("5")) {
-					algor.add(5);
-				}
-				else if(al.equals("6")) {
-					algor.add(6);
-				}
+			System.out.println("1)DES 2)AES 3)Blowfish 4)RC4");
+			System.out.println("Escriba el numero del algoritmo SIMETRICO deseado");
+			String alS = reader.nextLine();
+			if(alS.equals("1")) {
+				algor.add(1);
+			}
+			else if(alS.equals("2")) {
+				algor.add(2);
+			}
+			else if(alS.equals("3")) {
+				algor.add(3);
+			}
+			else if(alS.equals("4")) {
+				algor.add(4);
+			}
+			System.out.println("Como algoritmo ASIMETRICO de usa RSA");
+			algor.add(5);
+			System.out.println("6)HMACMD5 7)HMACSHA1 8)HMACSHA256");
+			System.out.println("Escriba el numero del algoritmo deseado");
+			String al = reader.nextLine();
+			if(al.equals("6")) {
+				algor.add(6);
+			}
+			else if(al.equals("7")) {
+				algor.add(7);
+			}
+			else if(al.equals("8")) {
+				algor.add(8);
 			}
 			enviarAlgoritmos(algor);
 			crearllaves();
