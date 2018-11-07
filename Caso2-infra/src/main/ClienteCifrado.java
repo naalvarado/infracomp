@@ -40,10 +40,12 @@ public class ClienteCifrado {
 	private static KeyPair keypair;
 	private static X509Certificate serverCert;
 	private static SecretKey serverPublicKey;
+	private static int numero1;
+	private static int numero2;
 	
 	private static void crearllaves() throws Exception {
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-        keyGen.initialize(1024);
+        keyGen.initialize(1024, new SecureRandom());
         keypair = keyGen.generateKeyPair();
 	}
 	
@@ -118,12 +120,12 @@ public class ClienteCifrado {
 	
 	public static void recivirCertSer() throws Exception {
 		String servercert = bReader.readLine();
-		System.out.println(servercert);
+		//System.out.println(servercert);
 		byte[] RAWcert = new byte[1000];
 		RAWcert = hexStringToByteArray(servercert);
-		System.out.println("copia el certificado el byte");
+		//System.out.println("copia el certificado el byte");
 		serverCert = (X509Certificate)CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(RAWcert));
-		System.out.println("le da valor al serverCent");
+		//System.out.println("le da valor al serverCent");
 		pWriter.println("OK");
 	}
 	
@@ -139,12 +141,12 @@ public class ClienteCifrado {
 	
 	public static void recivirkey() throws Exception {
 		String serverKeys = bReader.readLine();
-		System.out.println(serverKeys);
+		//System.out.println(serverKeys);
 		byte[] RAWserverKey = hexStringToByteArray(serverKeys);
-		Cipher cipher = Cipher.getInstance(ALGORITMOS[2]); 
+		Cipher cipher = Cipher.getInstance(ALGORITMOS[4]); 
 		cipher.init(Cipher.DECRYPT_MODE, keypair.getPrivate());
 		byte[] serverKey = cipher.doFinal(RAWserverKey);
-		serverPublicKey = new SecretKeySpec(serverKey,0,serverKey.length,ALGORITMOS[2]);
+		serverPublicKey = new SecretKeySpec(serverKey,0,serverKey.length,ALGORITMOS[numero1 - 1]);
 	}
 	
 	public static String bytesToHex(byte[] bytes) {
@@ -159,7 +161,7 @@ public class ClienteCifrado {
 	
 	public static void sendKey() throws Exception{
 		byte[] key = serverPublicKey.getEncoded();
-		Cipher cipher = Cipher.getInstance(ALGORITMOS[2]);
+		Cipher cipher = Cipher.getInstance(ALGORITMOS[4]);
 		cipher.init(Cipher.ENCRYPT_MODE, serverCert.getPublicKey());
 		byte[] encryptedKey = cipher.doFinal(key);
 		String keyS = bytesToHex(encryptedKey);
@@ -169,11 +171,11 @@ public class ClienteCifrado {
 	}
 	
 	public static void consultaConHMAC(String numC) throws Exception{
-		Cipher cipher = Cipher.getInstance(ALGORITMOS[2]);
+		Cipher cipher = Cipher.getInstance(ALGORITMOS[numero1 - 1]);
 		cipher.init(Cipher.ENCRYPT_MODE, serverPublicKey);
 		byte[] mess = cipher.doFinal(numC.getBytes());
 		
-	    Mac mac = Mac.getInstance(ALGORITMOS[2]);
+	    Mac mac = Mac.getInstance(ALGORITMOS[numero2 - 1]);
 	    mac.init(serverPublicKey);
 	    byte[] macB = mac.doFinal(numC.getBytes());
 	    
@@ -196,15 +198,19 @@ public class ClienteCifrado {
 			String alS = reader.nextLine();
 			if(alS.equals("1")) {
 				algor.add(1);
+				numero1 = 1;
 			}
 			else if(alS.equals("2")) {
 				algor.add(2);
+				numero1 = 2;
 			}
 			else if(alS.equals("3")) {
 				algor.add(3);
+				numero1 = 3;
 			}
 			else if(alS.equals("4")) {
 				algor.add(4);
+				numero1 = 4;
 			}
 			System.out.println("Como algoritmo ASIMETRICO de usa RSA");
 			algor.add(5);
@@ -213,12 +219,15 @@ public class ClienteCifrado {
 			String al = reader.nextLine();
 			if(al.equals("6")) {
 				algor.add(6);
+				numero2 = 6;
 			}
 			else if(al.equals("7")) {
 				algor.add(7);
+				numero2 = 7;
 			}
 			else if(al.equals("8")) {
 				algor.add(8);
+				numero2 = 8;
 			}
 			enviarAlgoritmos(algor);
 			crearllaves();
@@ -229,6 +238,8 @@ public class ClienteCifrado {
 			System.out.println("Introdusca el numero de cuanta: ");
 			String num = reader.nextLine();
 			consultaConHMAC(num);
+			String RespuestaF = bReader.readLine();
+			System.out.println(RespuestaF);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
