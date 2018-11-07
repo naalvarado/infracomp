@@ -1,7 +1,6 @@
 package main;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -9,23 +8,14 @@ import java.net.Socket;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.Scanner;
-
-import javax.crypto.Cipher;
-import javax.crypto.Mac;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 
 public class ClienteNormal {
 	
 	private static Socket s;
 	private static BufferedReader bReader;
 	private static PrintWriter pWriter;
-	private static final char[] hexArray = "0123456789ABCDEF".toCharArray();
 	private static final String[] ALGORITMOS = {"DES","AES","Blowfish","RC4","RSA","HMACMD5","HMACSHA1","HMACSHA256"};
 	private static KeyPair keypair;
 	private static String serverCert;
