@@ -23,9 +23,9 @@ public class ClienteNormal {
 	private static int numero1;
 	private static int numero2;
 	
-	public static void conectarseS(int puerto) throws Exception{
+	public static void conectarseS(String ip, int puerto) throws Exception{
 		
-		s = new Socket("localhost", puerto);
+		s = new Socket(ip, puerto);
 		bReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
 		pWriter = new PrintWriter(s.getOutputStream(),true);
 		
@@ -96,7 +96,9 @@ public class ClienteNormal {
 		String p = reader.nextLine();
 		int pu = Integer.parseInt(p);
 		try {
-			conectarseS(pu);
+			System.out.println("Escriba la ip del servidor: ");
+			String ip = reader.nextLine();
+			conectarseS(ip,pu);
 			init();
 			LinkedList<Integer> algor = new LinkedList<Integer>();
 			System.out.println("1)DES 2)AES 3)Blowfish 4)RC4");
@@ -143,9 +145,13 @@ public class ClienteNormal {
 			sendKey();
 			System.out.println("Introdusca el numero de cuanta: ");
 			String num = reader.nextLine();
+			long startTime = System.nanoTime();
 			consultaConHMAC(num);
 			String RespuestaF = bReader.readLine();
 			System.out.println(RespuestaF);
+			long estimatedTime = System.nanoTime() - startTime;
+			double re = (double)estimatedTime / 1_000_000_000.0;
+			System.out.println(re + " Segundos");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
