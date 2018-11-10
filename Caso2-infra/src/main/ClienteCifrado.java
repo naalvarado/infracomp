@@ -31,9 +31,9 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 public class ClienteCifrado {
 	
-	private static Socket s;
-	private static BufferedReader bReader;
-	private static PrintWriter pWriter;
+	//private static Socket s;
+	//private static BufferedReader bReader;
+	//private static PrintWriter pWriter;
 	private static final char[] hexArray = "0123456789ABCDEF".toCharArray();
 	private static final String[] ALGORITMOS = {"DES","AES","Blowfish","RC4","RSA","HMACMD5","HMACSHA1","HMACSHA256"};
 	private static KeyPair keypair;
@@ -52,7 +52,7 @@ public class ClienteCifrado {
         keypair = keyGen.generateKeyPair();
 	}
 	
-	public static void conectarseS(String ip, int puerto) throws Exception{
+	public static void conectarseS(String ip, int puerto, Socket s,BufferedReader bReader,PrintWriter pWriter) throws Exception{
 		
 		s = new Socket(ip, puerto);
 		bReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -60,15 +60,16 @@ public class ClienteCifrado {
 		
 	}
 	
-	public static void init() throws Exception {
+	public static void init(Socket s,BufferedReader bReader,PrintWriter pWriter) throws Exception {
+		
 		
 		pWriter.println("HOLA");
 		String re = bReader.readLine();
-		System.out.println("SERVIDOR: "+re);
+		System.out.println("SERVIDOR: "+re+" (init)");
 		
 	}
 	
-	public static void enviarAlgoritmos(LinkedList<Integer> pLista) throws IOException {
+	public static void enviarAlgoritmos(LinkedList<Integer> pLista,Socket s,BufferedReader bReader,PrintWriter pWriter) throws IOException {
 		
 		String mes = "ALGORITMOS";
 		for(int i : pLista) {
@@ -77,7 +78,7 @@ public class ClienteCifrado {
 		System.out.println(mes);
 		pWriter.println(mes);
 		String re = bReader.readLine();
-		System.out.println("SERVIDOR: "+re);
+		System.out.println("SERVIDOR: "+re+" (envialAlgo)");
 	}
 	
 	public static String printByteArrayHexa(byte[] byteArray) {
@@ -112,16 +113,16 @@ public class ClienteCifrado {
 		
 	}
 	
-	public static void enviarCertificado() throws Exception {
+	public static void enviarCertificado(BufferedReader bReader,PrintWriter pWriter) throws Exception {
 		X509Certificate certificado = generarCertificado();
 		byte[] certificadoEnBytes = certificado.getEncoded( );
 		String certificadoEnString = printByteArrayHexa(certificadoEnBytes);
 		pWriter.println(certificadoEnString);
 		String re = bReader.readLine();
-		System.out.println("SERVIDOR: "+re);
+		System.out.println("SERVIDOR: "+re+" (enviarCert)");
 	}
 	
-	public static void recivirCertSer() throws Exception {
+	public static void recivirCertSer(BufferedReader bReader,PrintWriter pWriter) throws Exception {
 		String servercert = bReader.readLine();
 		//System.out.println(servercert);
 		byte[] RAWcert = new byte[1000];
@@ -142,7 +143,7 @@ public class ClienteCifrado {
 	    return data;
 	}
 	
-	public static void recivirkey() throws Exception {
+	public static void recivirkey(BufferedReader bReader,PrintWriter pWriter) throws Exception {
 		String serverKeys = bReader.readLine();
 		//System.out.println(serverKeys);
 		byte[] RAWserverKey = hexStringToByteArray(serverKeys);
@@ -162,7 +163,7 @@ public class ClienteCifrado {
 	    return new String(hexChars);
 	}
 	
-	public static void sendKey() throws Exception{
+	public static void sendKey(BufferedReader bReader,PrintWriter pWriter) throws Exception{
 		byte[] key = serverPublicKey.getEncoded();
 		Cipher cipher = Cipher.getInstance(ALGORITMOS[4]);
 		cipher.init(Cipher.ENCRYPT_MODE, serverCert.getPublicKey());
@@ -170,10 +171,10 @@ public class ClienteCifrado {
 		String keyS = bytesToHex(encryptedKey);
 		pWriter.println(keyS);
 		String re = bReader.readLine();
-		System.out.println("SERVIDOR: "+re);
+		System.out.println("SERVIDOR: "+re+" (sendKey)");
 	}
 	
-	public static void consultaConHMAC(String numC) throws Exception{
+	public static void consultaConHMAC(String numC,BufferedReader bReader,PrintWriter pWriter) throws Exception{
 		Cipher cipher = Cipher.getInstance(ALGORITMOS[numero1 - 1]);
 		cipher.init(Cipher.ENCRYPT_MODE, serverPublicKey);
 		byte[] mess = cipher.doFinal(numC.getBytes());
@@ -186,7 +187,13 @@ public class ClienteCifrado {
 	    pWriter.println(DatatypeConverter.printHexBinary(macB));
 	}
 
-	public static void run() {
+	public void run() {
+		
+		Socket s;
+		BufferedReader bReader;
+		PrintWriter pWriter;
+		
+		//PrintWriter textWriter;
 		
 		Scanner reader = new Scanner(System.in);
 		System.out.println("Escriba el puerto del servidor: ");
@@ -197,8 +204,15 @@ public class ClienteCifrado {
 			System.out.println("Escriba la ip del servidor: ");
 			//String ip = reader.nextLine();
 			String ip = "157.253.202.18";
-			conectarseS(ip,pu);
-			init();
+			
+			//conectarseS(ip,pu,s,bReader,pWriter);
+			s = new Socket(ip, pu);
+			bReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+			pWriter = new PrintWriter(s.getOutputStream(),true);
+			
+			//textWriter = new PrintWriter("tiempos.txt");
+			
+			init(s,bReader,pWriter);
 			LinkedList<Integer> algor = new LinkedList<Integer>();
 			System.out.println("1)DES 2)AES 3)Blowfish 4)RC4");
 			System.out.println("Escriba el numero del algoritmo SIMETRICO deseado");
@@ -238,22 +252,23 @@ public class ClienteCifrado {
 				algor.add(8);
 				numero2 = 8;
 			}
-			enviarAlgoritmos(algor);
+			enviarAlgoritmos(algor,s,bReader,pWriter);
 			crearllaves();
-			enviarCertificado();
-			recivirCertSer();
-			recivirkey();
-			sendKey();
+			enviarCertificado(bReader,pWriter);
+			recivirCertSer(bReader,pWriter);
+			recivirkey(bReader,pWriter);
+			sendKey(bReader,pWriter);
 			System.out.println("Introdusca el numero de cuanta: ");
 			//String num = reader.nextLine();
 			String num = "555";
 			long startTime = System.nanoTime();
-			consultaConHMAC(num);
+			consultaConHMAC(num,bReader,pWriter);
 			String RespuestaF = bReader.readLine();
 			System.out.println(RespuestaF);
 			long estimatedTime = System.nanoTime() - startTime;
 			double re = (double)estimatedTime / 1_000_000_000.0;
 			System.out.println(re + " Segundos");
+			//textWriter.println(re+"");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

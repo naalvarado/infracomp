@@ -9,7 +9,7 @@ public class Generator {
 	
 	public Generator(){
 		Task work = createTask();
-		int numberOfTasks = 30;
+		int numberOfTasks = 80;
 		int gapBetweenTasks = 100;
 		generator = new LoadGenerator("Client - Server Load Test", numberOfTasks, work, gapBetweenTasks);
 	    generator.generate();
