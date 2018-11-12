@@ -1,6 +1,8 @@
 package srvIC201820;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -29,6 +31,7 @@ public class Delegado4 extends Thread {
 	// Atributos
 	private Socket sc = null;
 	private String dlg;
+	private BufferedWriter pw2;
 	
 	Delegado4 (Socket csP, int idP) {
 		sc = csP;
@@ -115,7 +118,10 @@ public class Delegado4 extends Thread {
 				System.out.println(dlg + "confirmo llave simetrica. -OK, continuando.");
 				long tDelta = System.currentTimeMillis() - startTime;
 				double elapsedSeconds = tDelta / 1000.0;
-				System.out.println("El timepo transcurrido es de :"+elapsedSeconds);
+				pw2 = new BufferedWriter(new FileWriter("tiemposVerificacion.txt", true)); 
+				pw2.newLine();
+				pw2.write(elapsedSeconds+"");
+				pw2.close();
 				//fin tiempo de verificacion. El tiempo transucrrido se guarda en elapsedSecond
 				
 				/***** Fase 7: Lectura de la consulta *****/
