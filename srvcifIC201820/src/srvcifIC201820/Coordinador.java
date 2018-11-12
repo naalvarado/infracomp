@@ -1,6 +1,8 @@
 package srvcifIC201820;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
@@ -39,7 +41,9 @@ public class Coordinador {
 		 if (value == -1.0) return Double.NaN;
 		 // returns a percentage value with 1 decimal point precision
 		 return ((int)(value * 1000) / 10.0);
-		 }
+	}
+	
+	
 	public static void main(String[] args) throws Exception{
 		// TODO Auto-generated method stub
 
@@ -53,6 +57,9 @@ public class Coordinador {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());		
 		keyPairServidor = Seg.grsa();
 		certSer = Seg.gc(keyPairServidor);
+		
+		BufferedWriter writerCPU;
+		writerCPU = new BufferedWriter(new FileWriter("CPULoad.txt", true));
 
 		//Crea el pool
 		int numT = 2;
@@ -63,8 +70,8 @@ public class Coordinador {
 		ss = new ServerSocket(5000);
 		System.out.println(MAESTRO + "Socket creado.");
 		while (true) {
-System.out.println(getSystemCpuLoad());	
-try { 
+          System.out.println(getSystemCpuLoad());	
+          try { 
 				Socket sc = ss.accept();
 				System.out.println(MAESTRO + "Cliente " + idThread + " aceptado.");
 				//Delegado3 d3 = new Delegado3(sc,idThread);
@@ -78,7 +85,10 @@ try {
 				e.printStackTrace();
 			}
 			
-
+            writerCPU.newLine();
+			writerCPU.write(getSystemCpuLoad()+"");
+			writerCPU.close();
+          
 		}
 
 	}

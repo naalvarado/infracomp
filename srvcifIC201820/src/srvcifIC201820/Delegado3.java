@@ -1,9 +1,8 @@
 package srvcifIC201820;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,7 +40,7 @@ public class Delegado3 extends Thread {
 	private byte[] mybyte;
 	private int rechazado;
 
-	private PrintWriter pw2;
+	private BufferedWriter pw2;
 
 	Delegado3 (Socket csP, int idP) {
 		sc = csP;
@@ -150,14 +149,11 @@ public class Delegado3 extends Thread {
 			ac.println(OK);		
 			long tDelta = System.currentTimeMillis() - startTime;
 			double elapsedSeconds = tDelta / 1000.0;
-			File f = new File("tiempoVerificacion.txt");
-			if(!f.exists())
-				pw2 = new PrintWriter(new FileOutputStream(f,true));
-			else
-			{
-				pw2.println(elapsedSeconds);
-				pw2.close();
-			}
+			
+			pw2 = new BufferedWriter(new FileWriter("tiemposVerificacion.txt", true)); 
+			pw2.newLine();
+			pw2.write(elapsedSeconds+"");
+			pw2.close();
 
 
 			//fin tiempo de verificacion. El tiempo transucrrido se guarda en elapsedSeconds
