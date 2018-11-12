@@ -3,11 +3,11 @@ package main;
 import uniandes.gload.core.LoadGenerator;
 import uniandes.gload.core.Task;
 
-public class Generator {
+public class GeneratorNormal {
 	
 	private LoadGenerator generator;
 	
-	public Generator(){
+	public GeneratorNormal(){
 		Task work = createTask();
 		int numberOfTasks = 20;
 		int gapBetweenTasks = 100;
@@ -16,12 +16,12 @@ public class Generator {
 	}
 	
 	private Task createTask(){
-		return new ClientServerTask();
+		return new ClientServerTaskNormal();
 	}
 	
-	  public static void main(String... args)
-	  {
-	    Generator gen = new Generator();
-	  }
+	public static void main(String... args)
+	{
+		GeneratorNormal gen = new GeneratorNormal();
+	}
 
 }

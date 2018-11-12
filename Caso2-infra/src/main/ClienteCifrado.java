@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.security.*;
 import java.security.cert.CertificateFactory;
@@ -212,7 +211,7 @@ public class ClienteCifrado {
 			bReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
 			pWriter = new PrintWriter(s.getOutputStream(),true);
 			
-			writer = new BufferedWriter(new FileWriter("tiempos.txt", true)); 
+			writer = new BufferedWriter(new FileWriter("tiemposCifrado.txt", true)); 
 			
 			init(s,bReader,pWriter);
 			LinkedList<Integer> algor = new LinkedList<Integer>();

@@ -2,8 +2,8 @@ package main;
 
 import uniandes.gload.core.Task;
 
-public class ClientServerTask extends Task{
-
+public class ClientServerTaskNormal extends Task{
+	
 	@Override
 	public void fail() {
 		System.out.println("FAIL_TEST");
@@ -18,7 +18,7 @@ public class ClientServerTask extends Task{
 
 	@Override
 	public void execute() {
-		ClienteCifrado client = new ClienteCifrado();
+		ClienteNormal client = new ClienteNormal();
 	    client.run();
 		
 	}
