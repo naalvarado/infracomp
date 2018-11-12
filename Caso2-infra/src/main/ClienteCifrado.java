@@ -1,7 +1,9 @@
 package main;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -193,7 +195,7 @@ public class ClienteCifrado {
 		BufferedReader bReader;
 		PrintWriter pWriter;
 		
-		//PrintWriter textWriter;
+		BufferedWriter writer;
 		
 		Scanner reader = new Scanner(System.in);
 		System.out.println("Escriba el puerto del servidor: ");
@@ -203,14 +205,14 @@ public class ClienteCifrado {
 		try {
 			System.out.println("Escriba la ip del servidor: ");
 			//String ip = reader.nextLine();
-			String ip = "157.253.202.18";
+			String ip = "localhost";
 			
 			//conectarseS(ip,pu,s,bReader,pWriter);
 			s = new Socket(ip, pu);
 			bReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
 			pWriter = new PrintWriter(s.getOutputStream(),true);
 			
-			//textWriter = new PrintWriter("tiempos.txt");
+			writer = new BufferedWriter(new FileWriter("tiempos.txt", true)); 
 			
 			init(s,bReader,pWriter);
 			LinkedList<Integer> algor = new LinkedList<Integer>();
@@ -268,7 +270,10 @@ public class ClienteCifrado {
 			long estimatedTime = System.nanoTime() - startTime;
 			double re = (double)estimatedTime / 1_000_000_000.0;
 			System.out.println(re + " Segundos");
-			//textWriter.println(re+"");
+			
+			writer.newLine();
+			writer.write(re+"");
+			writer.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
