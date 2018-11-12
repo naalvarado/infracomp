@@ -116,7 +116,6 @@ public class Delegado4 extends Thread {
 				}
 				ac.println(OK);
 				System.out.println(dlg + "confirmo llave simetrica. -OK, continuando.");
-				
 				long tDelta = System.currentTimeMillis() - startTime;
 				double elapsedSeconds = tDelta / 1000.0;
 				pw2 = new BufferedWriter(new FileWriter("tiemposVerificacion.txt", true)); 
